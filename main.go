@@ -116,9 +116,17 @@ func checkThresholds(stats [7]float64) {
 	// 4. Сеть: занято > 90%, свободная полоса в Mbit/s (целое)
 	if totalNet > 0 {
 		usedRatio := usedNet / totalNet
-		freeNetMbit := int64((totalNet - usedNet) * 8 / 1024 / 1024)
+
+		totalNetBytes := int64(totalNet)
+		usedNetBytes := int64(usedNet)
+		freeNetBytes := totalNetBytes - usedNetBytes
+
+		// байты -> мегабиты в секунду через 1000, а не 1024
+		freeNetMbit := freeNetBytes * 8 / 1000 / 1000
+
 		if usedRatio*100 > 90 {
 			fmt.Printf("Network bandwidth usage high: %d Mbit/s available\n", freeNetMbit)
 		}
 	}
+
 }

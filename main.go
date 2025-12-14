@@ -98,11 +98,17 @@ func checkThresholds(stats [7]float64) {
 		}
 	}
 
-	// 3. Диск: занято > 90%, вывести свободное место в Mb (целое)
+	// 3. Диск: занято > 90%, вывести свободное место в Mb
 	if totalDisk > 0 {
 		usedRatio := usedDisk / totalDisk
-		freeDiskMb := int64((totalDisk - usedDisk) / 1024 / 1024)
-		if usedRatio*100 > 90 { // сравнение в процентах
+
+		// все переводим в int64 и считаем целочисленно
+		totalDiskBytes := int64(totalDisk)
+		usedDiskBytes := int64(usedDisk)
+		freeDiskBytes := totalDiskBytes - usedDiskBytes
+		freeDiskMb := freeDiskBytes / 1024 / 1024
+
+		if usedRatio*100 > 90 {
 			fmt.Printf("Free disk space is too low: %d Mb left\n", freeDiskMb)
 		}
 	}

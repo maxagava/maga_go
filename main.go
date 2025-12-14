@@ -83,34 +83,36 @@ func checkThresholds(stats [7]float64) {
 	totalNet := stats[5]
 	usedNet := stats[6]
 
-	// 1. Load Average
+	// 1. Load Average > 30
 	if loadAvg > 30 {
-		fmt.Printf("Load Average is too high: %.0f\n", loadAvg)
+		// целая часть без десятичных
+		fmt.Printf("Load Average is too high: %d\n", int64(loadAvg))
 	}
 
 	// 2. Память: > 80%
 	if totalMem > 0 {
-		memUsage := (usedMem / totalMem) * 100
+		// целочисленное деление, процент без дробей
+		memUsage := int64(usedMem * 100 / totalMem)
 		if memUsage > 80 {
-			fmt.Printf("Memory usage too high: %.0f%%\n", memUsage)
+			fmt.Printf("Memory usage too high: %d%%\n", memUsage)
 		}
 	}
 
-	// 3. Диск: занято > 90%, вывести свободное место в МБ
+	// 3. Диск: занято > 90%, вывести свободное место в Mb (целое)
 	if totalDisk > 0 {
 		usedRatio := usedDisk / totalDisk
-		freeDiskMb := (totalDisk - usedDisk) / 1024 / 1024
-		if usedRatio > 0.9 {
-			fmt.Printf("Free disk space is too low: %.0f Mb left\n", freeDiskMb)
+		freeDiskMb := int64((totalDisk - usedDisk) / 1024 / 1024)
+		if usedRatio*100 > 90 { // сравнение в процентах
+			fmt.Printf("Free disk space is too low: %d Mb left\n", freeDiskMb)
 		}
 	}
 
-	// 4. Сеть: занято > 90%, вывести свободную полосу в Мбит/с
+	// 4. Сеть: занято > 90%, свободная полоса в Mbit/s (целое)
 	if totalNet > 0 {
 		usedRatio := usedNet / totalNet
-		freeNetMbit := (totalNet - usedNet) * 8 / 1024 / 1024
-		if usedRatio > 0.9 {
-			fmt.Printf("Network bandwidth usage high: %.0f Mbit/s available\n", freeNetMbit)
+		freeNetMbit := int64((totalNet - usedNet) * 8 / 1024 / 1024)
+		if usedRatio*100 > 90 {
+			fmt.Printf("Network bandwidth usage high: %d Mbit/s available\n", freeNetMbit)
 		}
 	}
 }
